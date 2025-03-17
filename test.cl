@@ -1,7 +1,6 @@
-(* models one-dimensional cellular automaton on a circle of finite radius
-   arrays are faked as Strings,
-   X's respresent live cells, dots represent dead cells,
-   no error checking is done *)
+(* Dvidimos nossos testes em etapas, são elas: *)
+
+(* Teste 1: Código reaproveitado do professor - Há um erro proposital em  'Int <- num_cells[] in' o correto seria 'Int <- num_cells() in'*)
 class CellularAutomaton inherits IO {
     population_map : String;
    
@@ -43,8 +42,6 @@ class CellularAutomaton inherits IO {
         fi
     };
    
-    (* a cell will live if exactly 1 of itself and it's immediate
-       neighbors are alive *)
     cell_at_next_evolution(position : Int) : String {
         if (if cell(position) = "X" then 1 else 0 fi
             + if cell_left_neighbor(position) = "X" then 1 else 0 fi
@@ -53,7 +50,7 @@ class CellularAutomaton inherits IO {
         then
             "X"
         else
-            '.'
+            "."
         fi
     };
    
@@ -88,10 +85,48 @@ class Main {
                         cells.evolve();
                         cells.print();
                         countdown <- countdown - 1;
-                    
+                    }
                 pool
-            );  (* end let countdown
+            );  
             self;
         }
     };
 };
+
+(* Teste 2: Teste de identificadores *)
+class Teste {
+    metodo() : Int { 42 + 8 * (10 - 3) };
+};
+
+(* Teste 3: Comentários (Devem ser ignorados) *)
+-- Testando um comentário de linha
+(* Testando um comentário 
+   de múltiplas linhas *)
+
+(* Teste 4: Testando strings e quebras de linha *)
+class StringTeste {
+    x : String <- "Texto com\nquebra de linha";
+    y : String <- "String com \"aspas duplas\" dentro";
+    z : String <- "Normal";
+};
+
+(* Teste 5: Testando contas matemáticas *)
+class Operadores {
+    soma : Int <- 10 + 20;
+    subtracao : Int <- 50 - 25;
+    multiplicacao : Int <- 3 * 4;
+    divisao : Int <- 100 / 5;
+    comparacao : Bool <- 10 < 20;
+    igualdade : Bool <- (5 = 5);
+};
+
+(* Teste 6: Erros propositais para verificar se vao ser capturados *)
+
+-- String sem fechamento (deve gerar erro)
+"String sem aspas no final
+
+-- Comentário sem fechamento (deve gerar erro)
+(* Comentário aberto sem fechamento
+
+(* Token inválido (deve gerar erro) *)
+$variavel_invalida <- 10;
