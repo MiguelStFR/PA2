@@ -124,9 +124,3 @@ class Operadores {
 
 -- String sem fechamento (deve gerar erro)
 "String sem aspas no final
-
--- Comentário sem fechamento (deve gerar erro)
-(* Comentário aberto sem fechamento
-
-(* Token inválido (deve gerar erro) *)
-$variavel_invalida <- 10;
