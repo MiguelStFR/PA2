@@ -123,3 +123,45 @@ Instructions
 Write-up for PA2
 ----------------
 
+The following document details the implementation strategy and challenges faced while developing the code for the cool.flex file. This implementation was carried out using Flex as part of PA2 to build the scanner for the Cool language. The choice of Flex was primarily due to its extensive documentation, which facilitated both analysis and reference throughout the development process.
+
+The scanner operates by reading the teste.cl file line by line, processing each character to determine whether it matches any predefined rules in the code. If a match is found, the scanner returns the corresponding token and continues the analysis. Otherwise, it generates an error message or returns an invalid value, ensuring that any unrecognized input is handled properly.
+
+To enable the scanner’s functionality, the code begins by including the necessary libraries. These libraries were already present in the original file and remained unchanged. However, significant modifications and additions were made to enhance the scanner’s capabilities. One of the key improvements was the explicit handling of token returns, ensuring that each identified token—such as operators and literals—was correctly recognized. Additionally, specific adjustments were made to distinguish keywords like IF, ELSE, CLASS, and true from generic identifiers, preventing misinterpretation.
+
+Another crucial enhancement involved defining tokens for multi-character expressions, such as DARROW (=>), ASSIGN (<-), and LE (<=). Furthermore, rules were established to identify integer constants (INT_CONST), type names (TYPEID), and general identifiers (ID). Initially, an issue arose in the order of identifier rules: TYPEID was placed after ID, which caused certain identifiers that should have been classified as TYPEID to be recognized incorrectly as ID. This was resolved by reversing their order, ensuring that TYPEID was processed first. The corrected implementation was structured as follows:
+
+{TYPEID} { cool_yylval.symbol = stringtable.add_string(yytext); return TYPEID; }  
+{ID} { cool_yylval.symbol = stringtable.add_string(yytext); return OBJECTID; }
+
+Special handling was also required for integer constants to ensure that only valid numeric sequences were recognized. A specific rule was implemented to associate numerical values with the symbol table (inttable), allowing the compiler to store and reference them appropriately:
+
+{INT_CONST} { cool_yylval.symbol = inttable.add_string(yytext); return INT_CONST; }  
+
+Another significant challenge was implementing support for nested multi-line comments. To achieve this, a counter was used to track the level of nesting. If a comment was opened but not properly closed, the scanner would generate a lexical error, indicating the line number where the issue occurred. The mechanism carefully scanned each character to correctly detect comment delimiters:
+
+"(*" {  
+    int nested = 1;  
+    char c;  
+
+    while (nested > 0) {  
+        c = yyinput();  
+
+        if (c == EOF) {  
+            fprintf(stderr, "Lexical error on line %d: unclosed comment\n", curr_lineno);  
+            return ERROR;  
+        } else if (c == '\n') {  
+            curr_lineno++;  
+        } else if (c == '(') {  
+            if ((c = yyinput()) == '*') nested++;  
+        } else if (c == '*') {  
+            if ((c = yyinput()) == ')') nested--;  
+        }  
+    }  
+}  
+
+Throughout development, several challenges emerged and were systematically resolved. One of the primary issues involved multi-line reading. Initially, the scanner was only processing a single line from the teste.cl file. After debugging, it was discovered that a crucial line of the original code had been deleted, causing this unintended behavior. Restoring the missing line corrected the issue, allowing the scanner to process the entire file as expected.
+
+Another difficulty was handling special characters. Establishing a universal rule for all special characters proved challenging, as they each required distinct recognition criteria. The solution was to explicitly define rules for each character, ensuring that all were correctly processed by the scanner.
+
+With these refinements, the scanner was successfully implemented, offering robust token recognition and error handling. The adjustments made not only improved accuracy but also ensured that the scanner adhered to the language specifications, providing a solid foundation for further development.
