@@ -164,3 +164,54 @@ Throughout development, several challenges emerged and were systematically resol
 Another difficulty was handling special characters. Establishing a universal rule for all special characters proved challenging, as they each required distinct recognition criteria. The solution was to explicitly define rules for each character, ensuring that all were correctly processed by the scanner.
 
 With these refinements, the scanner was successfully implemented, offering robust token recognition and error handling. The adjustments made not only improved accuracy but also ensured that the scanner adhered to the language specifications, providing a solid foundation for further development.
+
+---8<------8<------8<------8<---cut here---8<------8<------8<------8<---
+
+# Test Cases and Coverage
+The test.cl file was carefully expanded to include a diverse set of test cases. 
+These cases aim to ensure complete lexical coverage of the Cool language specification and robust error detection.
+
+The tests were organized into six sections, each targeting specific features:
+
+- **Test 1: Instructor’s Example with Deliberate Error**
+	- Based on a full Cool program provided as an example.
+	- Includes a deliberate syntax error in num_cells[] in to validate error detection.
+- **Test 2: Identifiers and Arithmetic Expressions**
+	- Verifies correct tokenization of identifiers, integers, arithmetic operators, and parentheses.
+- **Test 3: Single-Line and Multi-Line Comments**
+	- Ensures comments are ignored and line numbering remains accurate.
+- **Test 4: Strings with Escapes and Edge Cases**
+	- Tests string literals with escape sequences, quotes, and regular strings.
+- **Test 5: Mathematical and Boolean Operators**
+	- Validates tokenization of all arithmetic and comparison operators.
+- **Test 6: Lexical Errors**
+	- Invalid constructs such as unterminated strings, unclosed comments, and invalid tokens like $.
+
+> ## Error Handling and Recovery
+> ### Error Type and Behavior
+> - Invalid Character	> Returns token ERROR with the character message.
+> - Unterminated String	> ERROR with "Unterminated string constant" message.
+> - String Null Character	> ERROR with "String contains null character" message.
+> - String Too Long	> ERROR with "String constant too long" message.
+> - Unmatched *)	> ERROR with "Unmatched *)" message.
+> - OF in Comment or String	> ERROR with appropriate EOF message and recovery.
+>
+> All errors are passed via *cool_yylval.error_msg* and do not interrupt scanner flow.
+
+## Use of Symbol Tables
+- Identifiers and strings use stringtable.add_string(yytext).
+- Integers use inttable.add_string(yytext).
+- Ensures efficient memory use and symbol reuse.
+
+## Justification of Correctness
+### The scanner:
+- Recognizes all tokens per Cool specs.
+- Updates curr_lineno accurately.
+- Handles errors gracefully.
+- Fully tested with valid and invalid inputs.
+
+No crashes or unhandled exceptions. Ready for compiler integration.
+
+## Final Remarks
+All requirements of PA2 were met. The scanner is functional, robust, and tested extensively.
+
