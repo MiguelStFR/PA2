@@ -120,10 +120,9 @@ Instructions
 
 ---8<------8<------8<------8<---cut here---8<------8<------8<------8<---
 
-Write-up for PA2
-----------------
+Lexical Analyzer
 
-The following document details the implementation strategy and challenges faced while developing the code for the cool.flex file. This implementation was carried out using Flex as part of PA2 to build the scanner for the Cool language. The choice of Flex was primarily due to its extensive documentation, which facilitated both analysis and reference throughout the development process.
+Here are the details of the implementation strategy and challenges faced while developing the code for the cool.flex file. This implementation was carried out using Flex as part of PA2 to build the scanner for the Cool language. The choice of Flex was primarily due to its extensive documentation, which facilitated both analysis and reference throughout the development process.
 
 The scanner operates by reading the teste.cl file line by line, processing each character to determine whether it matches any predefined rules in the code. If a match is found, the scanner returns the corresponding token and continues the analysis. Otherwise, it generates an error message or returns an invalid value, ensuring that any unrecognized input is handled properly.
 
