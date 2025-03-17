@@ -77,7 +77,7 @@ INT_CONST       [0-9]+
     while (nested > 0) {
         c = yyinput(); // Lê um caractere diretamente
         if (c == EOF) {
-            fprintf(stderr, "Erro léxico na linha %d: comentário não fechado\n", curr_lineno);
+            fprintf(stderr, "Lexical Error in line %d: EOF in comment\n", curr_lineno);
             return ERROR;
         } else if (c == '\n') {
             curr_lineno++;
@@ -89,16 +89,26 @@ INT_CONST       [0-9]+
     }
 }
 
+
+\"([^\"\\\n]|\\.)*[\n] {
+    fprintf(stderr, "Erro léxico na linha %d: string não fechada\n", curr_lineno);
+    return ERROR;
+}
+
 \"([^\"\\\n]|\\.)*\" {
     int length = yyleng - 2; // Remove aspas
     if (length >= MAX_STR_CONST) {
         fprintf(stderr, "Erro léxico na linha %d: string muito longa\n", curr_lineno);
         return ERROR;
     }
-    if (strchr(yytext, '\0')) {
-        fprintf(stderr, "Erro léxico na linha %d: string contém caractere nulo\n", curr_lineno);
-        return ERROR;
+    
+    for (int i = 1; i < length + 1; i++) {
+        if (yytext[i] == '\0') {
+            fprintf(stderr, "Erro léxico na linha %d: string contém caractere nulo\n", curr_lineno);
+            return ERROR;
+        }
     }
+    
     strncpy(string_buf, yytext + 1, length);
     string_buf[length] = '\0';
     cool_yylval.symbol = stringtable.add_string(string_buf);
@@ -131,6 +141,11 @@ not             { return NOT; }
 true            { cool_yylval.boolean = 1; return BOOL_CONST; }
 false           { cool_yylval.boolean = 0; return BOOL_CONST; }
 
+"*)"	{ 
+			  fprintf(stderr, "Lexical Error in line %d: Unmatched *)'\n", curr_lineno); 
+			  return ERROR;
+		}
+		
 ";"     { return ';'; }
 "{"     { return '{'; }
 "}"     { return '}'; }
@@ -148,6 +163,8 @@ false           { cool_yylval.boolean = 0; return BOOL_CONST; }
 "-"     { return '-'; }
 "*"     { return '*'; }
 "/"     { return '/'; }
+"["     { return '['; }
+"]"     { return ']'; }
 
 {TYPEID}        { cool_yylval.symbol = stringtable.add_string(yytext); return TYPEID; }
 {ID}            { cool_yylval.symbol = stringtable.add_string(yytext); return OBJECTID; }
